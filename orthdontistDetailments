@@ -1,0 +1,28 @@
+SELECT 
+ u.FullName 'Nome Completo',
+ u.Phone 'Telefone',
+ CONCAT(
+ 	u.AddressesJson->>'$[0].city',
+ 	" - ",
+	u.AddressesJson->>'$[0].state'
+ ) 'Cidade - estado',
+ u.CpfCnpj 'CPF/CNPJ',
+ u.BillingCpfCnpj `CPF/CNPJ de faturamento`,
+ u.CRO,
+ (SELECT 
+		uc.FullName
+	FROM
+		users uc
+	INNER JOIN invites i ON i.InvitedUserId = u.id AND i.RequestingUserId = uc.Id
+	ORDER BY i.CreatedAt DESC
+	LIMIT 1) `Convidado por`,
+ IF(u.Id = NULL, 'Nunca acessou', 'Ativo') 'Acesso',
+ f.DisplayName 'Área'
+FROM 
+	users u
+LEFT JOIN 
+	logincredentials l ON l.UserId = u.Id
+LEFT JOIN
+	franchises f ON f.ParentFranchisorUserId = u.Id
+WHERE u.Level = '400'
+ORDER BY u.FullName
