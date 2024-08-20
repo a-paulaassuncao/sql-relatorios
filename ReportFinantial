@@ -1,0 +1,20 @@
+SELECT
+   u.FullName 'Nome do ortodontista',
+   (u.AddressesJson->>'$[0].city') 'Cidade do ortodontista',
+   p.Type 'Tipo de pedido',
+   upatient.FullName 'Paciente do pedido',
+   p.CreatedAt 'Data do pedido',
+   ps.CreatedAt 'Data de aprovação',
+   p.PriceDefinition->>'$.Credits' 'Créditos debitados',
+   ucomertial.FullName 'Comercial associado',
+   f.DisplayName 'Área'
+FROM
+    users u
+    
+LEFT JOIN platerequests p ON p.DoctorUserId = u.Id
+LEFT JOIN users ucomertial ON ucomertial.Id = u.ParentComertialUser
+LEFT JOIN franchises f ON f.Id = u.AssociatedFranchiseId
+INNER JOIN users upatient ON upatient.Id = p.PatientUserId
+INNER JOIN platerequeststeps ps ON ps.PlateRequestId = p.Id AND ps.Identifier = 701
+
+ORDER BY u.FullName

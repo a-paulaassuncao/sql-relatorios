@@ -1,3 +1,5 @@
+-- Ana Paula Assunção
+
 SELECT 
  u.FullName 'Nome Completo',
  u.Phone 'Telefone',

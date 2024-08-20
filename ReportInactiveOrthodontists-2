@@ -1,3 +1,5 @@
+-- Ana Paula Assunção
+
 SELECT DISTINCT
     u.FullName 'Nome do ortodontista',
     CONCAT(
