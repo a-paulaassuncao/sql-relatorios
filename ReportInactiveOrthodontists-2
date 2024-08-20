@@ -1,22 +1,21 @@
-SELECT 
- u.FullName 'Nome do ortodontista',
- CONCAT(
- 	u.AddressesJson->>'$[0].city',
- 	" - ",
-	u.AddressesJson->>'$[0].state'
- ) 'Cidade do ortodontista',
- u.Email 'Email',
- u.Phone 'Telefone', 
-    CONCAT(DATEDIFF(NOW(), p.UpdatedAt), ' dias')
-	 'Última solicitação',
- (SELECT 
-		uc.FullName
-	FROM
-		users uc
-	INNER JOIN invites i ON i.InvitedUserId = u.id AND i.RequestingUserId = uc.Id
-	ORDER BY i.CreatedAt DESC
-	LIMIT 1) `Comercial associado`,
-	CONCAT(
+SELECT DISTINCT
+    u.FullName 'Nome do ortodontista',
+    CONCAT(
+        u.AddressesJson->>'$[0].city',
+        ' - ',
+        u.AddressesJson->>'$[0].state'
+    ) 'Cidade do ortodontista',
+    IF(u.Email IS NULL, 'E-mail não disponível', u.Email) 'Email',
+    IF(u.Phone IS NULL, 'Telefone não disponível', u.Phone) 'Telefone', 
+    CONCAT(DATEDIFF(NOW(), p.UpdatedAt), ' dias') 'Última solicitação',
+    (SELECT 
+        uc.FullName
+    FROM
+        users uc
+    INNER JOIN invites i ON i.InvitedUserId = u.id AND i.RequestingUserId = uc.Id
+    ORDER BY i.CreatedAt DESC
+    LIMIT 1) `Comercial associado`,
+    CONCAT(
         ELT(WEEKDAY(u.CreatedAt) + 1, 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado', 'Domingo'), 
         ', ', 
         DAY(u.CreatedAt), 
@@ -25,11 +24,9 @@ SELECT
         ' de ', 
         YEAR(u.CreatedAt)
     ) 'Cadastrado em'
-
- FROM 
-	users u
-	
+FROM 
+    users u
 LEFT JOIN plans p ON p.DoctorId = u.Id
-	
-WHERE u.Level = '400'
-ORDER BY u.FullName
+LEFT JOIN treatments t ON t.DoctorId = u.Id AND TIMESTAMPDIFF(MONTH, t.UpdatedAt, NOW()) BETWEEN 4 AND 6 
+ORDER BY 
+    u.FullName;
