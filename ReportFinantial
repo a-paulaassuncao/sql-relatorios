@@ -1,3 +1,5 @@
+-- Ana Paula Assunção
+
 SELECT
    u.FullName 'Nome do ortodontista',
    (u.AddressesJson->>'$[0].city') 'Cidade do ortodontista',
