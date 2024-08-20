@@ -1,0 +1,32 @@
+-- Artur Rabello
+SELECT 
+    u.FinancialResponsibleJson->>'$[0].full_name' AS 'Representante comercial',
+   u.FullName AS 'Nome Completo',
+   u.email,
+   (SELECT 
+      uc.FullName
+   FROM
+      users uc
+   INNER JOIN invites i ON i.InvitedUserId = u.Id AND i.RequestingUserId = uc.Id
+   ORDER BY i.CreatedAt DESC
+   LIMIT 1) AS 'T.I',
+   IF(l.Id IS NULL, 'Nunca acessou', 'Ativo') AS 'situação',
+   f.DisplayName AS 'Área'
+FROM 
+   users u
+LEFT JOIN 
+   logincredentials l ON l.UserId = u.Id
+LEFT JOIN
+   franchises f ON f.ParentFranchisorUserId = u.Id
+WHERE 
+   u.Level = '400' 
+   AND (SELECT 
+         uc.FullName
+      FROM 
+         users uc
+      INNER JOIN invites i ON i.InvitedUserId = u.Id AND i.RequestingUserId = uc.Id
+      ORDER BY i.CreatedAt DESC
+      LIMIT 1) = 'Gabriel Cristaldo '
+   AND u.FinancialResponsibleJson IS NOT NULL
+ORDER BY 
+   u.FullName;
