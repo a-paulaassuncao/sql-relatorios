@@ -1,0 +1,19 @@
+SELECT 
+    p.CreatedAt 'Data e hora',
+    p.Type 'Tipo de solicitação',
+    (SELECT
+    FROM platerequeststeps ps
+    WHERE ps.PlateRequestId = p.Id)
+    LIMIT 1 'Paciente',
+    (SELECT
+    FROM platerequeststeps ps
+    WHERE ps.PlateRequestId = p.Id)
+    'Ortodontista solicitante',
+    ps.MadeByUserId 'Ortodontista planejador'
+FROM 
+    users u
+
+LEFT JOIN platerequests p ON p.DoctorUserId = u.Id
+LEFT JOIN platerequeststeps p ON p.PlateRequestId = p.Id AND p.Identifier = 501
+
+ORDER BY u.FullName
