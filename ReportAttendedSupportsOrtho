@@ -1,0 +1,13 @@
+SELECT DISTINCT
+	sa.CreatedAt 'Data e hora',
+	sa.Duration 'Duração',
+	sa.Status 'Situação',
+	sa.RequestingUserId,
+	sa.AttendingUserId 'Atendente',
+	sa.Feedback 'Avaliação'
+FROM
+	supportappointments sa
+	
+INNER JOIN users u ON u.Id = sa.RequestingUserId
+	
+ORDER BY sa.CreatedAt ASC;
