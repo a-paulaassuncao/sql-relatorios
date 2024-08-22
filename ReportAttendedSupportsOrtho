@@ -2,8 +2,16 @@ SELECT DISTINCT
 	sa.CreatedAt 'Data e hora',
 	sa.Duration 'Duração',
 	sa.Status 'Situação',
-	sa.RequestingUserId,
-	sa.AttendingUserId 'Atendente',
+	(SELECT u.FullName 
+		FROM users u
+		WHERE u.Id = sa.RequestingUserId 
+		LIMIT 1) 'Solicitante',
+	(SELECT u.FullName
+		FROM users u
+		WHERE u.Id = sa.AttendingUserId 
+			AND u.Level = '600' 
+			AND u.SubLevel = '400'
+		LIMIT 1) 'Atendente',
 	sa.Feedback 'Avaliação'
 FROM
 	supportappointments sa
